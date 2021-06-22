@@ -3,7 +3,7 @@ import { Fetcher as FetcherSpirit, Token as TokenSpirit } from '@spiritswap/sdk'
 import { Fetcher, Route, Token } from '@spookyswap/sdk';
 import { Configuration } from './config';
 import { ContractName, TokenStat, AllocationTime, LPStat, Bank, PoolStats } from './types';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
 import { decimalToBalance } from './ether-utils';
 import { TransactionResponse } from '@ethersproject/providers';
 import ERC20 from './ERC20';
@@ -755,12 +755,45 @@ export class TombFinance {
     const treasuryDaoFundedFilter = Treasury.filters.DaoFundFunded();
     const treasuryDevFundedFilter = Treasury.filters.DevFundFunded();
     const treasuryMasonryFundedFilter = Treasury.filters.MasonryFunded();
+    const boughtBondsFilter = Treasury.filters.BoughtBonds();
+    const redeemBondsFilter = Treasury.filters.RedeemedBonds();
 
+    let epochBlocksRanges = new Array();
     let masonryFundEvents = await Treasury.queryFilter(treasuryMasonryFundedFilter);
     var events: any[] = [];
     masonryFundEvents.forEach(function callback(value, index) {
       events.push({ epoch: index + 1 });
       events[index].masonryFund = getDisplayBalance(value.args[1]);
+      if (index === 0) {
+        epochBlocksRanges.push({
+          index: index,
+          startBlock: value.blockNumber,
+          boughBonds: 0,
+          redeemedBonds: 0,
+        });
+      }
+      if (index > 0) {
+        epochBlocksRanges.push({
+          index: index,
+          startBlock: value.blockNumber,
+          boughBonds: 0,
+          redeemedBonds: 0,
+        });
+        epochBlocksRanges[index - 1].endBlock = value.blockNumber;
+      }
+    });
+
+    epochBlocksRanges.forEach(async (value, index) => {
+      events[index].bondsBought = await this.getBondsWithFilterForPeriod(
+        boughtBondsFilter,
+        value.startBlock,
+        value.endBlock,
+      );
+      events[index].bondsRedeemed = await this.getBondsWithFilterForPeriod(
+        redeemBondsFilter,
+        value.startBlock,
+        value.endBlock,
+      );
     });
     let DEVFundEvents = await Treasury.queryFilter(treasuryDevFundedFilter);
     DEVFundEvents.forEach(function callback(value, index) {
@@ -771,6 +804,19 @@ export class TombFinance {
       events[index].daoFund = getDisplayBalance(value.args[1]);
     });
     return events;
+  }
+
+  /**
+   * Helper method
+   * @param filter applied on the query to the treasury events
+   * @param from block number
+   * @param to block number
+   * @returns the amount of bonds events emitted based on the filter provided during a specific period
+   */
+  async getBondsWithFilterForPeriod(filter: EventFilter, from: number, to: number): Promise<number> {
+    const { Treasury } = this.contracts;
+    const bondsAmount = await Treasury.queryFilter(filter, from, to);
+    return bondsAmount.length;
   }
 
   async estimateZapIn(tokenName: string, lpName: string, amount: string): Promise<number[]> {

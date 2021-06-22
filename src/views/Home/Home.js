@@ -335,11 +335,7 @@ const Home = () => {
                 </CardIcon>
               </Box>
               <Box mt={2}>
-                <Button
-                  color="primary"
-                  onClick={onPresentTshareZap}
-                  variant="contained"
-                >
+                <Button color="primary" onClick={onPresentTshareZap} variant="contained">
                   Zap In
                 </Button>
               </Box>
