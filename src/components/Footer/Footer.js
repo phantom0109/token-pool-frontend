@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Grid, Typography, Link } from '@material-ui/core';
 import TwitterImage from '../../assets/img/twitter.svg';
+import GithubImage from '../../assets/img/github.svg';
 import TelegramImage from '../../assets/img/telegram.svg';
 import DiscordImage from '../../assets/img/discord.svg';
 import YoutubeImage from '../../assets/img/youtube.svg';
@@ -57,6 +58,14 @@ const Footer = () => {
               className={classes.link}
             >
               <img alt="twitter" src={TwitterImage} className={classes.img} />
+            </a>
+            <a
+              href="https://github.com/tombfinance/tombfinance-frontend"
+              rel="noopener noreferrer"
+              target="_blank"
+              className={classes.link}
+            >
+              <img alt="twitter" src={GithubImage} className={classes.img} />
             </a>
             <a href="https://t.me/tombfinance" rel="noopener noreferrer" target="_blank" className={classes.link}>
               <img alt="telegram" src={TelegramImage} className={classes.img} />
