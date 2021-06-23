@@ -30,10 +30,10 @@ const NoMatch = () => (
 
 const App: React.FC = () => {
   // Clear localStorage for mobile users
-  if (typeof localStorage.version_app === 'undefined' || localStorage.version_app !== '1.0') {
+  if (typeof localStorage.version_app === 'undefined' || localStorage.version_app !== '1.1') {
     localStorage.clear();
     localStorage.setItem('connectorId', '');
-    localStorage.setItem('version_app', '1.0');
+    localStorage.setItem('version_app', '1.1');
   }
 
   usePromptNetwork();
