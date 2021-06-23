@@ -1,11 +1,13 @@
 import React from 'react';
-import { ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { ListItem, ListItemIcon, ListItemText, Button } from '@material-ui/core';
 
 const WalletCard = ({ icon, onConnect, title }) => (
-  <ListItem button onClick={onConnect}>
-    <ListItemIcon>{icon}</ListItemIcon>
-    <ListItemText primary={title} />
-  </ListItem>
+  <Button fullWidth onClick={onConnect} className="wallet-button">
+    <span style={{ marginRight: '1rem', height: '2rem' }}>{icon}</span>
+    <span>{title}</span>
+  </Button>
 );
 
 export default WalletCard;
+
+// :)

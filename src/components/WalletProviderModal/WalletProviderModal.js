@@ -9,7 +9,8 @@ import { useWallet } from 'use-wallet';
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: 'absolute',
-    width: 400,
+    width: '400px',
+    maxWidth: '100%',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(4),

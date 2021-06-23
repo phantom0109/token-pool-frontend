@@ -66,3 +66,16 @@ footer .a:hover {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+.wallet-button {
+  color: #2c2560 !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1.1rem !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  text-transform: none !important;
+}
+.wallet-button:hover {
+  background-color: black !important;
+  color: #757ce8 !important;
+}
