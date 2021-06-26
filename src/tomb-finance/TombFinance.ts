@@ -156,11 +156,8 @@ export class TombFinance {
   async getBondStat(): Promise<TokenStat> {
     const { Treasury } = this.contracts;
     const tombStat = await this.getTombStat();
-    const bondTombRatio = await Treasury.getBondPremiumRate();
-    let modifier = 1; // keep to 1 if no bondPremium is to be used
-    if (getBalance(bondTombRatio, this.TOMB.decimal) > 0) {
-      modifier = getBalance(bondTombRatio, this.TOMB.decimal);
-    }
+    const bondTombRatioBN = await Treasury.getBondPremiumRate();
+    const modifier = bondTombRatioBN / 1e18 > 1 ? bondTombRatioBN / 1e18 : 1;
     const bondPriceInFTM = (Number(tombStat.tokenInFtm) * modifier).toFixed(2);
     const priceOfTBondInDollars = (Number(tombStat.priceInDollars) * modifier).toFixed(2);
     const supply = await this.TBOND.displayedTotalSupply();
