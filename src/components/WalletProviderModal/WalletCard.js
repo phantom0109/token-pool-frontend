@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem, ListItemIcon, ListItemText, Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 
 const WalletCard = ({ icon, onConnect, title }) => (
   <Button fullWidth onClick={onConnect} className="wallet-button">
