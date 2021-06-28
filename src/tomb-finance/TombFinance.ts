@@ -7,7 +7,7 @@ import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
 import { decimalToBalance } from './ether-utils';
 import { TransactionResponse } from '@ethersproject/providers';
 import ERC20 from './ERC20';
-import { getFullDisplayBalance, getDisplayBalance, getBalance } from '../utils/formatBalance';
+import { getFullDisplayBalance, getDisplayBalance } from '../utils/formatBalance';
 import { getDefaultProvider } from '../utils/provider';
 import IUniswapV2PairABI from './IUniswapV2Pair.abi.json';
 import config, { bankDefinitions } from '../config';
@@ -755,7 +755,7 @@ export class TombFinance {
     const boughtBondsFilter = Treasury.filters.BoughtBonds();
     const redeemBondsFilter = Treasury.filters.RedeemedBonds();
 
-    let epochBlocksRanges = new Array();
+    let epochBlocksRanges: any[] = [];
     let masonryFundEvents = await Treasury.queryFilter(treasuryMasonryFundedFilter);
     var events: any[] = [];
     masonryFundEvents.forEach(function callback(value, index) {
