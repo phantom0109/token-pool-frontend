@@ -166,7 +166,7 @@ const Home = () => {
               <Button color="primary" href="/masonry" variant="contained" style={{ marginRight: '10px' }}>
                 Stake Now
               </Button>
-              <Button href="/cemetery" variant="contained" className={classes.button} style={{ marginRight: '10px' }}>
+              <Button href="/cemetery" variant="contained" style={{ marginRight: '10px' }}>
                 Farm Now
               </Button>
               <Button
@@ -175,6 +175,7 @@ const Home = () => {
                 href={buyTombAddress}
                 variant="contained"
                 style={{ marginRight: '10px' }}
+                className={classes.button}
               >
                 Buy TOMB
               </Button>
