@@ -16,6 +16,7 @@ import Updaters from './state/Updaters';
 import Loader from './components/Loader';
 import Popups from './components/Popups';
 import Regulations from './views/Regulations/Regulations';
+import { RefreshContextProvider } from './contexts/RefreshContext';
 
 const Home = lazy(() => import('./views/Home'));
 const Cemetery = lazy(() => import('./views/Cemetery'));
@@ -80,16 +81,18 @@ const Providers: React.FC = ({ children }) => {
         >
           <Provider store={store}>
             <Updaters />
-            <TombFinanceProvider>
-              <ModalsProvider>
-                <BanksProvider>
-                  <>
-                    <Popups />
-                    {children}
-                  </>
-                </BanksProvider>
-              </ModalsProvider>
-            </TombFinanceProvider>
+            <RefreshContextProvider>
+              <TombFinanceProvider>
+                <ModalsProvider>
+                  <BanksProvider>
+                    <>
+                      <Popups />
+                      {children}
+                    </>
+                  </BanksProvider>
+                </ModalsProvider>
+              </TombFinanceProvider>
+            </RefreshContextProvider>
           </Provider>
         </UseWalletProvider>
       </TP>

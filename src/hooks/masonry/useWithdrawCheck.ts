@@ -1,24 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useTombFinance from './../useTombFinance';
-import config from '../../config';
+import useRefresh from '../useRefresh';
 
 const useWithdrawCheck = () => {
   const [canWithdraw, setCanWithdraw] = useState(false);
   const tombFinance = useTombFinance();
+  const { slowRefresh } = useRefresh();
   const isUnlocked = tombFinance?.isUnlocked;
 
-  const canUserWithdraw = useCallback(async () => {
-    setCanWithdraw(await tombFinance.canUserUnstakeFromMasonry());
-  }, [tombFinance]);
-
   useEffect(() => {
-    if (isUnlocked) {
-      canUserWithdraw().catch((err) => console.error(err.stack));
-
-      const checkButton = setInterval(canUserWithdraw, config.refreshInterval);
-      return () => clearInterval(checkButton);
+    async function canUserWithdraw() {
+      try {
+        setCanWithdraw(await tombFinance.canUserUnstakeFromMasonry());
+      } catch (err) {
+        console.error(err);
+      }
     }
-  }, [isUnlocked, canUserWithdraw, tombFinance]);
+    if (isUnlocked) {
+      canUserWithdraw();
+    }
+  }, [isUnlocked, tombFinance, slowRefresh]);
 
   return canWithdraw;
 };

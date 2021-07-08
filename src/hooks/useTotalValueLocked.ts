@@ -1,19 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useTombFinance from './useTombFinance';
-import config from '../config';
+import useRefresh from './useRefresh';
+
 const useTotalValueLocked = () => {
   const [totalValueLocked, setTotalValueLocked] = useState<Number>(0);
+  const { slowRefresh } = useRefresh();
   const tombFinance = useTombFinance();
 
-  const fetchTVL = useCallback(async () => {
-    setTotalValueLocked(await tombFinance.getTotalValueLocked());
-  }, [tombFinance]);
-
   useEffect(() => {
-    fetchTVL().catch((err) => console.error(`Failed to fetch Total value locked: ${err.stack}`));
-    const refreshInterval = setInterval(fetchTVL, config.refreshInterval);
-    return () => clearInterval(refreshInterval);
-  }, [setTotalValueLocked, tombFinance, fetchTVL]);
+    async function fetchTVL() {
+      try {
+        setTotalValueLocked(await tombFinance.getTotalValueLocked());
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+    fetchTVL();
+  }, [setTotalValueLocked, tombFinance, slowRefresh]);
 
   return totalValueLocked;
 };

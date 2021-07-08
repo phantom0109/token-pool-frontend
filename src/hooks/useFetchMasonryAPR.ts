@@ -1,20 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useTombFinance from './useTombFinance';
-import config from '../config';
+import useRefresh from './useRefresh';
 
 const useFetchMasonryAPR = () => {
   const [apr, setApr] = useState<number>(0);
   const tombFinance = useTombFinance();
-
-  const fetchMasonryPR = useCallback(async () => {
-    setApr(await tombFinance.getMasonryAPR());
-  }, [tombFinance]);
+  const { slowRefresh } = useRefresh(); 
 
   useEffect(() => {
-    fetchMasonryPR().catch((err) => console.error(`Failed to fetch masonry apr: ${err.stack}`));
-    const refreshInterval = setInterval(fetchMasonryPR, config.refreshInterval);
-    return () => clearInterval(refreshInterval);
-  }, [setApr, tombFinance, fetchMasonryPR]);
+    async function fetchMasonryAPR() {
+      try {
+        setApr(await tombFinance.getMasonryAPR());
+      } catch(err){
+        console.error(err);
+      }
+    }
+   fetchMasonryAPR();
+  }, [setApr, tombFinance, slowRefresh]);
 
   return apr;
 };

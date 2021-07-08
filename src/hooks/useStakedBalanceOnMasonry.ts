@@ -1,26 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BigNumber } from 'ethers';
 import useTombFinance from './useTombFinance';
-import config from '../config';
+import useRefresh from './useRefresh';
 
 const useStakedBalanceOnMasonry = () => {
+  const { slowRefresh } = useRefresh();
   const [balance, setBalance] = useState(BigNumber.from(0));
   const tombFinance = useTombFinance();
   const isUnlocked = tombFinance?.isUnlocked;
-
-  const fetchBalance = useCallback(async () => {
-    setBalance(await tombFinance.getStakedSharesOnMasonry());
-  }, [tombFinance]);
-
   useEffect(() => {
-    if (isUnlocked) {
-      fetchBalance().catch((err) => console.error(err.stack));
-
-      const refreshBalance = setInterval(fetchBalance, config.refreshInterval);
-      return () => clearInterval(refreshBalance);
+    async function fetchBalance() {
+      try {
+        setBalance(await tombFinance.getStakedSharesOnMasonry());
+      } catch (e) {
+        console.error(e);
+      }
     }
-  }, [setBalance, isUnlocked, tombFinance, fetchBalance]);
-
+    if (isUnlocked) {
+      fetchBalance();
+    }
+  }, [slowRefresh, isUnlocked, tombFinance]);
   return balance;
 };
 
