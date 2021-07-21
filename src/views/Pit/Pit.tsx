@@ -76,7 +76,6 @@ const Pit: React.FC = () => {
                     !isBondPurchasable
                       ? 'TOMB is over peg'
                       : 'TOMB is under peg'
-                      {/*: `${Math.floor(100 / Number(bondStat.priceInDollars) - 100)}% return when TOMB > 1.1FTM`*/}
                   }
                   onExchange={handleBuyBonds}
                   disabled={!bondStat || isBondRedeemable}
