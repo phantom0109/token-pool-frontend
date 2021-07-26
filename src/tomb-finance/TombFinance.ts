@@ -748,6 +748,26 @@ export class TombFinance {
     return true;
   }
 
+  async provideTombFtmLP(ftmAmount: string, tombAmount: BigNumber): Promise<TransactionResponse> {
+    const { TaxOffice } = this.contracts;
+    let overrides = {
+      value: parseUnits(ftmAmount, 18),
+    };
+    return await TaxOffice.addLiquidityETHTaxFree(tombAmount, tombAmount.mul(992).div(1000), parseUnits(ftmAmount, 18).mul(992).div(1000), overrides);
+  }
+
+  async quoteFromSpooky(tokenAmount: string, tokenName: string): Promise<string> {
+    const { SpookyRouter } = this.contracts;
+    const { _reserve0, _reserve1 } = await this.TOMBWFTM_LP.getReserves();
+    let quote;
+    if (tokenName === 'TOMB') {
+      quote = await SpookyRouter.quote(parseUnits(tokenAmount), _reserve1, _reserve0);
+    } else {
+      quote = await SpookyRouter.quote(parseUnits(tokenAmount), _reserve0, _reserve1);
+    }
+    return (quote / 1e18).toString();
+  }
+
   /**
    * @returns an array of the regulation events till the most up to date epoch
    */
