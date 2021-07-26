@@ -215,6 +215,11 @@ export class TombFinance {
     return Treasury.getTombUpdatedPrice();
   }
 
+  async getBondsPurchasable(): Promise<BigNumber> {
+    const { Treasury } = this.contracts;
+    return Treasury.getBurnableTombLeft();
+  }
+
   /**
    * Calculates the TVL, APR and daily APR of a provided pool/bank
    * @param bank
