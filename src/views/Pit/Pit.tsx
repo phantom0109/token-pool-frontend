@@ -85,7 +85,7 @@ const Pit: React.FC = () => {
                 <ExchangeStat
                   tokenName="TOMB"
                   description="Last-Hour TWAP Price"
-                  price={getDisplayBalance(cashPrice, 18, 2)}
+                  price={getDisplayBalance(cashPrice, 18, 4)}
                 />
                 <Spacer size="md" />
                 <ExchangeStat
