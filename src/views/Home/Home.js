@@ -308,7 +308,7 @@ const Home = () => {
                 </CardIcon>
               </Box>
               <Box mt={2}>
-                <Button color="primary" onClick={onPresentTombZap} variant="contained">
+                <Button color="primary" disabled={true} onClick={onPresentTombZap} variant="contained">
                   Zap In
                 </Button>
               </Box>
