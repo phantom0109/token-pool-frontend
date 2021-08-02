@@ -23,6 +23,7 @@ const Home = lazy(() => import('./views/Home'));
 const Cemetery = lazy(() => import('./views/Cemetery'));
 const Masonry = lazy(() => import('./views/Masonry'));
 const Pit = lazy(() => import('./views/Pit'));
+const SBS = lazy(() => import('./views/Sbs'));
 const Liquidity = lazy(() => import('./views/Liquidity'));
 
 const NoMatch = () => (
@@ -57,6 +58,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/pit">
               <Pit />
+            </Route>
+            <Route path="/sbs">
+              <SBS />
             </Route>
             <Route path="/regulations">
               <Regulations />

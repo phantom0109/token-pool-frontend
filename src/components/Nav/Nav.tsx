@@ -113,6 +113,9 @@ const Nav = () => {
               <Link color="textPrimary" to="/pit" className={classes.link}>
                 Pit
               </Link>
+              <Link color="textPrimary" to="/sbs" className={classes.link}>
+                SBS
+              </Link>
               <Link color="textPrimary" to="/liquidity" className={classes.link}>
                 Liquidity
               </Link>
@@ -162,6 +165,7 @@ const Nav = () => {
                 <ListItemLink primary="Cemetery" to="/cemetery" />
                 <ListItemLink primary="Masonry" to="/masonry" />
                 <ListItemLink primary="Pit" to="/pit" />
+                <ListItemLink primary="SBS" to="/sbs" />
                 <ListItemLink primary="Liquidity" to="/liquidity" />
                 <ListItemLink primary="Regulations" to="/regulations" />
                 <ListItem button component="a" href="https://docs.tomb.finance">

@@ -2,7 +2,7 @@
 import { Fetcher as FetcherSpirit, Token as TokenSpirit } from '@spiritswap/sdk';
 import { Fetcher, Route, Token } from '@spookyswap/sdk';
 import { Configuration } from './config';
-import { ContractName, TokenStat, AllocationTime, LPStat, Bank, PoolStats } from './types';
+import { ContractName, TokenStat, AllocationTime, LPStat, Bank, PoolStats, TShareSwapperStat } from './types';
 import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
 import { decimalToBalance } from './ether-utils';
 import { TransactionResponse } from '@ethersproject/providers';
@@ -158,7 +158,7 @@ export class TombFinance {
     const tombStat = await this.getTombStat();
     const bondTombRatioBN = await Treasury.getBondPremiumRate();
     const modifier = bondTombRatioBN / 1e18 > 1 ? bondTombRatioBN / 1e18 : 1;
-    const bondPriceInFTM = (Number(tombStat.tokenInFtm) * modifier).toFixed(4);
+    const bondPriceInFTM = (Number(tombStat.tokenInFtm) * modifier).toFixed(2);
     const priceOfTBondInDollars = (Number(tombStat.priceInDollars) * modifier).toFixed(2);
     const supply = await this.TBOND.displayedTotalSupply();
     return {
@@ -876,5 +876,31 @@ export class TombFinance {
         this.myAccount,
       );
     }
+  }
+  async swapTBondToTShare(tbondAmount: BigNumber): Promise<TransactionResponse> {
+    const { TShareSwapper } = this.contracts;
+    return await TShareSwapper.swapTBondToTShare(tbondAmount);
+  }
+  async estimateAmountOfTShare(tbondAmount: BigNumber): Promise<BigNumber> {
+    const { TShareSwapper } = this.contracts;
+    return await TShareSwapper.estimateAmountOfTShare(tbondAmount.toNumber());
+  }
+
+  async getTShareSwapperStat(address: string): Promise<TShareSwapperStat> {
+    const { TShareSwapper } = this.contracts;
+    const tshareBalanceBN = await TShareSwapper.getTShareBalance();
+    const tbondBalanceBN = await TShareSwapper.getTBondBalance(address);
+    // const tombPriceBN = await TShareSwapper.getTombPrice();
+    // const tsharePriceBN = await TShareSwapper.getTSharePrice();
+    // const rateTSharePerTombBN = await TShareSwapper.getTShareAmountPerTomb();
+    const tshareBalance = getDisplayBalance(tshareBalanceBN, 18);
+    const tbondBalance = getDisplayBalance(tbondBalanceBN, 18);
+    return {
+      tshareBalance: tshareBalance.toString(),
+      tbondBalance: tbondBalance.toString(),
+      // tombPrice: tombPriceBN.toString(),
+      // tsharePrice: tsharePriceBN.toString(),
+      // rateTSharePerTomb: rateTSharePerTombBN.toString()
+    };
   }
 }
