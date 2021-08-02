@@ -7,7 +7,6 @@ import { useWallet } from 'use-wallet';
 import UnlockWallet from '../../components/UnlockWallet';
 import PageHeader from '../../components/PageHeader';
 import { Box, Button, Grid, Paper, Typography } from '@material-ui/core';
-import SwapCard from './components/SwapCard';
 import styled from 'styled-components';
 import Spacer from '../../components/Spacer';
 import useBondStats from '../../hooks/useBondStats';
