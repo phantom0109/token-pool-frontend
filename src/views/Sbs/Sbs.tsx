@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import React, { /*useCallback, useEffect, */useMemo, useState } from 'react';
 import Page from '../../components/Page';
 import PitImage from '../../assets/img/pit.png';
 import { createGlobalStyle } from 'styled-components';
@@ -6,20 +6,15 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { useWallet } from 'use-wallet';
 import UnlockWallet from '../../components/UnlockWallet';
 import PageHeader from '../../components/PageHeader';
-import { Box, Button, Grid, Paper, Typography } from '@material-ui/core';
-import SwapCard from './components/SwapCard';
+import { /*Box, Paper, Typography, */Button, Grid } from '@material-ui/core';
 import styled from 'styled-components';
 import Spacer from '../../components/Spacer';
-import useBondStats from '../../hooks/useBondStats';
+// import useBondStats from '../../hooks/useBondStats';
 import useTombFinance from '../../hooks/useTombFinance';
-import useTokenBalance from '../../hooks/useTokenBalance';
-import { useTransactionAdder } from '../../state/transactions/hooks';
-import useBondsPurchasable from '../../hooks/useBondsPurchasable';
-import { getDisplayBalance, getBalance } from '../../utils/formatBalance';
-import { BOND_REDEEM_PRICE, BOND_REDEEM_PRICE_BN } from '../../tomb-finance/constants';
-
-
-import { BigNumber, ethers } from 'ethers';
+// import useTokenBalance from '../../hooks/useTokenBalance';
+// import { useTransactionAdder } from '../../state/transactions/hooks';
+// import { getDisplayBalance, getBalance } from '../../utils/formatBalance';
+import { BigNumber/*, ethers*/ } from 'ethers';
 import useSwapTBondToTShare from '../../hooks/TShareSwapper/useSwapTBondToTShare';
 import useApprove, { ApprovalState } from '../../hooks/useApprove';
 import useTShareSwapperStats from '../../hooks/TShareSwapper/useTShareSwapperStats';
@@ -44,13 +39,13 @@ const Sbs: React.FC = () => {
   const { account } = useWallet();
   const tombFinance = useTombFinance();
   // const bondBalanceBN = useTokenBalance(tombFinance?.TBOND);
-  const bondStat = useBondStats();
+  // const bondStat = useBondStats();
 
   const [tbondAmount, setTbondAmount] = useState('');
   const [tshareAmount, setTshareAmount] = useState('');
 
   const [approveStatus, approve] = useApprove(tombFinance.TBOND, tombFinance.contracts.TShareSwapper.address);
-  const addTransaction = useTransactionAdder();
+  // const addTransaction = useTransactionAdder();
   const { onSwapTShare } = useSwapTBondToTShare();
   const tshareSwapperStat = useTShareSwapperStats(account);
 
@@ -84,7 +79,7 @@ const Sbs: React.FC = () => {
       setTshareAmount('');
     }
     if (!isNumeric(e.currentTarget.value)) return;
-    setTbondAmount(String(e.currentTarget.value));
+    setTshareAmount(String(e.currentTarget.value));
   }
 
   return (
@@ -201,18 +196,6 @@ const StyledCardWrapper = styled.div`
   flex-direction: column;
   @media (max-width: 768px) {
     width: 80%;
-  }
-`;
-
-const StyledStatsWrapper = styled.div`
-  display: flex;
-  flex: 0.8;
-  margin: 0 20px;
-  flex-direction: column;
-
-  @media (max-width: 768px) {
-    width: 80%;
-    margin: 16px 0;
   }
 `;
 

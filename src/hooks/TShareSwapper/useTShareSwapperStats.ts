@@ -5,7 +5,7 @@ import useRefresh from '../useRefresh';
 
 const useTShareSwapperStats = (account: string) => {
   const [stat, setStat] = useState<TShareSwapperStat>();
-  const { fastRefresh, slowRefresh } = useRefresh();
+  const { fastRefresh/*, slowRefresh*/ } = useRefresh();
   const tombFinance = useTombFinance();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const useTShareSwapperStats = (account: string) => {
       }
     }
     fetchTShareSwapperStat();
-  }, [setStat, tombFinance, slowRefresh, account]);
+  }, [setStat, tombFinance, fastRefresh, account]);
 
   return stat;
 };
