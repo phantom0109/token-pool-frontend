@@ -149,7 +149,6 @@ const Sbs: React.FC = () => {
                 <Button
                   disabled={approveStatus !== ApprovalState.NOT_APPROVED}
                   variant="contained"
-                  color="primary"
                   style={{ marginTop: '150px' }}
                   onClick={approve}
                 >
@@ -158,7 +157,6 @@ const Sbs: React.FC = () => {
               ) : (
                 <Button
                   variant="contained"
-                  color="primary"
                   style={{ marginTop: '20px' }}
                   onClick={() => onSwapTShare(tbondAmount.toString())}
                 >
