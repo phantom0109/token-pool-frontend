@@ -881,9 +881,14 @@ export class TombFinance {
     const { TShareSwapper } = this.contracts;
     return await TShareSwapper.swapTBondToTShare(tbondAmount);
   }
-  async estimateAmountOfTShare(tbondAmount: BigNumber): Promise<BigNumber> {
+  async estimateAmountOfTShare(tbondAmount: string): Promise<string> {
     const { TShareSwapper } = this.contracts;
-    return await TShareSwapper.estimateAmountOfTShare(tbondAmount.toNumber());
+    try {
+      const estimateBN = await TShareSwapper.estimateAmountOfTShare(parseUnits(tbondAmount, 18));
+      return getDisplayBalance(estimateBN, 18, 6);
+    } catch (err) {
+      console.error(`Failed to fetch estimate tshare amount: ${err}`);
+    }
   }
 
   async getTShareSwapperStat(address: string): Promise<TShareSwapperStat> {
@@ -892,15 +897,15 @@ export class TombFinance {
     const tbondBalanceBN = await TShareSwapper.getTBondBalance(address);
     // const tombPriceBN = await TShareSwapper.getTombPrice();
     // const tsharePriceBN = await TShareSwapper.getTSharePrice();
-    // const rateTSharePerTombBN = await TShareSwapper.getTShareAmountPerTomb();
-    const tshareBalance = getDisplayBalance(tshareBalanceBN, 18);
-    const tbondBalance = getDisplayBalance(tbondBalanceBN, 18);
+    const rateTSharePerTombBN = await TShareSwapper.getTShareAmountPerTomb();
+    const tshareBalance = getDisplayBalance(tshareBalanceBN, 18, 5);
+    const tbondBalance = getDisplayBalance(tbondBalanceBN, 18, 5);
     return {
       tshareBalance: tshareBalance.toString(),
       tbondBalance: tbondBalance.toString(),
       // tombPrice: tombPriceBN.toString(),
       // tsharePrice: tsharePriceBN.toString(),
-      // rateTSharePerTomb: rateTSharePerTombBN.toString()
+      rateTSharePerTomb: rateTSharePerTombBN.toString(),
     };
   }
 }

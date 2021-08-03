@@ -9,11 +9,8 @@ import PageHeader from '../../components/PageHeader';
 import { /*Box, Paper, Typography, */Button, Grid } from '@material-ui/core';
 import styled from 'styled-components';
 import Spacer from '../../components/Spacer';
-// import useBondStats from '../../hooks/useBondStats';
 import useTombFinance from '../../hooks/useTombFinance';
-// import useTokenBalance from '../../hooks/useTokenBalance';
-// import { useTransactionAdder } from '../../state/transactions/hooks';
-// import { getDisplayBalance, getBalance } from '../../utils/formatBalance';
+import { getDisplayBalance/*, getBalance*/ } from '../../utils/formatBalance';
 import { BigNumber/*, ethers*/ } from 'ethers';
 import useSwapTBondToTShare from '../../hooks/TShareSwapper/useSwapTBondToTShare';
 import useApprove, { ApprovalState } from '../../hooks/useApprove';
@@ -38,14 +35,10 @@ const Sbs: React.FC = () => {
   const { path } = useRouteMatch();
   const { account } = useWallet();
   const tombFinance = useTombFinance();
-  // const bondBalanceBN = useTokenBalance(tombFinance?.TBOND);
-  // const bondStat = useBondStats();
-
   const [tbondAmount, setTbondAmount] = useState('');
   const [tshareAmount, setTshareAmount] = useState('');
 
   const [approveStatus, approve] = useApprove(tombFinance.TBOND, tombFinance.contracts.TShareSwapper.address);
-  // const addTransaction = useTransactionAdder();
   const { onSwapTShare } = useSwapTBondToTShare();
   const tshareSwapperStat = useTShareSwapperStats(account);
 
@@ -59,27 +52,36 @@ const Sbs: React.FC = () => {
       return
     }
     if (!isNumeric(e.currentTarget.value)) return;
-    setTbondAmount(String(e.currentTarget.value));
-    const updateTShareAmount = await tombFinance.estimateAmountOfTShare(BigNumber.from(e.currentTarget.value));
-    setTshareAmount(updateTShareAmount.toString());  
+    setTbondAmount(e.currentTarget.value);
+    const updateTShareAmount = await tombFinance.estimateAmountOfTShare(e.currentTarget.value);
+    setTshareAmount(updateTShareAmount);  
   };
 
   const handleTBondSelectMax = async () => {
     setTbondAmount(String(bondBalance));
-    const updateTShareAmount = await tombFinance.estimateAmountOfTShare(BigNumber.from(bondBalance));
-    setTshareAmount(updateTShareAmount.toString()); 
+    const updateTShareAmount = await tombFinance.estimateAmountOfTShare(String(bondBalance));
+    setTshareAmount(updateTShareAmount); 
   };
 
   const handleTShareSelectMax = async () => {
     setTshareAmount(String(tshareBalance));
+    const rateTSharePerTomb = (await tombFinance.getTShareSwapperStat(account)).rateTSharePerTomb;
+    const updateTBondAmount = ((BigNumber.from(10).pow(30)).div(BigNumber.from(rateTSharePerTomb))).mul(Number(tshareBalance) * 1e6);
+    setTbondAmount(getDisplayBalance(updateTBondAmount, 18, 6));
   };
 
   const handleTShareChange = async (e: any) => {
-    if (e.currentTarget.value === '') {
+    const inputData = e.currentTarget.value;
+    if (inputData === '') {
       setTshareAmount('');
+      setTbondAmount('');
+      return
     }
-    if (!isNumeric(e.currentTarget.value)) return;
-    setTshareAmount(String(e.currentTarget.value));
+    if (!isNumeric(inputData)) return;
+    setTshareAmount(inputData);
+    const rateTSharePerTomb = (await tombFinance.getTShareSwapperStat(account)).rateTSharePerTomb;
+    const updateTBondAmount = ((BigNumber.from(10).pow(30)).div(BigNumber.from(rateTSharePerTomb))).mul(Number(inputData) * 1e6);
+    setTbondAmount(getDisplayBalance(updateTBondAmount, 18, 6));
   }
 
   return (
@@ -113,11 +115,12 @@ const Sbs: React.FC = () => {
                           symbol="TBond"
                         ></TokenInput>
                       </Grid>
+                      <StyledDesc>{`${bondBalance} TBOND Available in wallet`}</StyledDesc>
                     </StyledCardContentInner>
                   </CardContent>
                 </Card>
               </StyledCardWrapper>
-              <Spacer />
+              <Spacer size="md" />
               <StyledCardWrapper>
                 <Card>
                   <CardContent>
@@ -139,30 +142,44 @@ const Sbs: React.FC = () => {
                           symbol="TShare"
                         ></TokenInput>
                       </Grid>
+                      <StyledDesc>{`${tshareBalance} TSHARE Available in TShareSwapper`}</StyledDesc>
                     </StyledCardContentInner>
                   </CardContent>
                 </Card>
               </StyledCardWrapper>
             </StyledBond>
+
+            <Spacer size="lg" />
+
             <StyledApprove>
-              {approveStatus !== ApprovalState.APPROVED ? (
-                <Button
-                  disabled={approveStatus !== ApprovalState.NOT_APPROVED}
-                  variant="contained"
-                  style={{ marginTop: '150px' }}
-                  onClick={approve}
-                >
-                  Approve TBOND
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  style={{ marginTop: '20px' }}
-                  onClick={() => onSwapTShare(tbondAmount.toString())}
-                >
-                  Swap
-                </Button>
-              )}
+            <Grid item xs={12} sm={8}>
+              <Card>
+                <CardContent>
+                  <StyledApproveWrapper>
+                  {approveStatus !== ApprovalState.APPROVED ? (
+                    <Button
+                      disabled={approveStatus !== ApprovalState.NOT_APPROVED}
+                      color="primary"
+                      variant="contained"
+                      onClick={approve}
+                      size="medium"
+                    >
+                      Approve TBOND
+                    </Button>
+                  ) : (
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      onClick={() => onSwapTShare(tbondAmount.toString())}
+                      size="medium"
+                    >
+                      Swap
+                    </Button>
+                  )}
+                  </StyledApproveWrapper>
+                </CardContent>
+              </Card>
+            </Grid>
             </StyledApprove>
           </>
         ) : (
@@ -177,6 +194,11 @@ const StyledApprove = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const StyledApproveWrapper = styled.div`
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const StyledBond = styled.div`
@@ -238,5 +260,7 @@ const StyledCardContentInner = styled.div`
   flex-direction: column;
   justify-content: space-between;
 `;
+
+const StyledDesc = styled.span``;
 
 export default Sbs;

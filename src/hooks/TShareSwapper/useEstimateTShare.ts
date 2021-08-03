@@ -5,13 +5,13 @@ import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 
 const useEstimateTShare = (tbondAmount: string) => {
-  const [estimateAmount, setEstimateAmount] = useState<BigNumber>(null);
+  const [estimateAmount, setEstimateAmount] = useState<string>('');
   const { account } = useWallet();
   const tombFinance = useTombFinance();
 
   const estimateAmountOfTShare = useCallback(async () => {
     const tbondAmountBn = parseUnits(tbondAmount);
-    const amount = await tombFinance.estimateAmountOfTShare(tbondAmountBn);
+    const amount = await tombFinance.estimateAmountOfTShare(tbondAmountBn.toString());
     setEstimateAmount(amount);
   }, [account]);
 
