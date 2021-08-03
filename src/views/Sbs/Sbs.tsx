@@ -94,7 +94,7 @@ const Sbs: React.FC = () => {
               <PageHeader icon={'🏦'} title="TBond -> TShare Swap" subtitle="Swap TBond to TShare" />
             </Route>
             <Box mt={5}>
-              <Grid container justify="center" spacing={3}>
+              <Grid container justify="center" spacing={6}>
                 <StyledBoardroom>
                   <StyledCardsWrapper>
                     <StyledCardWrapper>
@@ -156,7 +156,7 @@ const Sbs: React.FC = () => {
               </Grid>
             </Box>
 
-            <Box mt={4}>
+            <Box mt={5}>
               <Grid container justify="center">
                 <Grid item xs={8}>
                   <Card>
