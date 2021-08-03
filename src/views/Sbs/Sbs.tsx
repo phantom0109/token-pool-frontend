@@ -6,7 +6,7 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { useWallet } from 'use-wallet';
 import UnlockWallet from '../../components/UnlockWallet';
 import PageHeader from '../../components/PageHeader';
-import { /*Box, Paper, Typography, */Button, Grid } from '@material-ui/core';
+import { Box,/* Paper, Typography,*/ Button, Grid } from '@material-ui/core';
 import styled from 'styled-components';
 import Spacer from '../../components/Spacer';
 import useTombFinance from '../../hooks/useTombFinance';
@@ -93,94 +93,101 @@ const Sbs: React.FC = () => {
             <Route exact path={path}>
               <PageHeader icon={'🏦'} title="TBond -> TShare Swap" subtitle="Swap TBond to TShare" />
             </Route>
-            <StyledBond>
-              <StyledCardWrapper>
-                <Card>
-                  <CardContent>
-                    <StyledCardContentInner>
-                      <StyledCardTitle>TBonds</StyledCardTitle>
-                      <StyledExchanger>
-                        <StyledToken>
-                          <StyledCardIcon>
-                            <TokenSymbol symbol={tombFinance.TBOND.symbol} size={54} />
-                          </StyledCardIcon>
-                        </StyledToken>
-                      </StyledExchanger>
-                      <Grid item xs={12}>
-                        <TokenInput
-                          onSelectMax={handleTBondSelectMax}
-                          onChange={handleTBondChange}
-                          value={tbondAmount}
-                          max={bondBalance}
-                          symbol="TBond"
-                        ></TokenInput>
-                      </Grid>
-                      <StyledDesc>{`${bondBalance} TBOND Available in wallet`}</StyledDesc>
-                    </StyledCardContentInner>
-                  </CardContent>
-                </Card>
-              </StyledCardWrapper>
-              <Spacer size="md" />
-              <StyledCardWrapper>
-                <Card>
-                  <CardContent>
-                    <StyledCardContentInner>
-                      <StyledCardTitle>TShare</StyledCardTitle>
-                      <StyledExchanger>
-                        <StyledToken>
-                          <StyledCardIcon>
-                            <TokenSymbol symbol={tombFinance.TSHARE.symbol} size={54} />
-                          </StyledCardIcon>
-                        </StyledToken>
-                      </StyledExchanger>
-                      <Grid item xs={12}>
-                        <TokenInput
-                          onSelectMax={handleTShareSelectMax}
-                          onChange={handleTShareChange}
-                          value={tshareAmount}
-                          max={tshareBalance}
-                          symbol="TShare"
-                        ></TokenInput>
-                      </Grid>
-                      <StyledDesc>{`${tshareBalance} TSHARE Available in TShareSwapper`}</StyledDesc>
-                    </StyledCardContentInner>
-                  </CardContent>
-                </Card>
-              </StyledCardWrapper>
-            </StyledBond>
+            <Box mt={5}>
+              <Grid container justify="center" spacing={3}>
+                <StyledBoardroom>
+                  <StyledCardsWrapper>
+                    <StyledCardWrapper>
+                      <Card>
+                        <CardContent>
+                          <StyledCardContentInner>
+                            <StyledCardTitle>TBonds</StyledCardTitle>
+                            <StyledExchanger>
+                              <StyledToken>
+                                <StyledCardIcon>
+                                  <TokenSymbol symbol={tombFinance.TBOND.symbol} size={54} />
+                                </StyledCardIcon>
+                              </StyledToken>
+                            </StyledExchanger>
+                            <Grid item xs={12}>
+                              <TokenInput
+                                onSelectMax={handleTBondSelectMax}
+                                onChange={handleTBondChange}
+                                value={tbondAmount}
+                                max={bondBalance}
+                                symbol="TBond"
+                              ></TokenInput>
+                            </Grid>
+                            <StyledDesc>{`${bondBalance} TBOND Available in wallet`}</StyledDesc>
+                          </StyledCardContentInner>
+                        </CardContent>
+                      </Card>
+                    </StyledCardWrapper>
+                    <Spacer />
+                    <StyledCardWrapper>
+                      <Card>
+                        <CardContent>
+                          <StyledCardContentInner>
+                            <StyledCardTitle>TShare</StyledCardTitle>
+                            <StyledExchanger>
+                              <StyledToken>
+                                <StyledCardIcon>
+                                  <TokenSymbol symbol={tombFinance.TSHARE.symbol} size={54} />
+                                </StyledCardIcon>
+                              </StyledToken>
+                            </StyledExchanger>
+                            <Grid item xs={12}>
+                              <TokenInput
+                                onSelectMax={handleTShareSelectMax}
+                                onChange={handleTShareChange}
+                                value={tshareAmount}
+                                max={tshareBalance}
+                                symbol="TShare"
+                              ></TokenInput>
+                            </Grid>
+                            <StyledDesc>{`${tshareBalance} TSHARE Available in TShareSwapper`}</StyledDesc>
+                          </StyledCardContentInner>
+                        </CardContent>
+                      </Card>
+              
+                    </StyledCardWrapper>
+                  </StyledCardsWrapper>
+                </StyledBoardroom>
+              </Grid>
+            </Box>
 
-            <Spacer size="lg" />
-
-            <StyledApprove>
-            <Grid item xs={12} sm={8}>
-              <Card>
-                <CardContent>
-                  <StyledApproveWrapper>
-                  {approveStatus !== ApprovalState.APPROVED ? (
-                    <Button
-                      disabled={approveStatus !== ApprovalState.NOT_APPROVED}
-                      color="primary"
-                      variant="contained"
-                      onClick={approve}
-                      size="medium"
-                    >
-                      Approve TBOND
-                    </Button>
-                  ) : (
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      onClick={() => onSwapTShare(tbondAmount.toString())}
-                      size="medium"
-                    >
-                      Swap
-                    </Button>
-                  )}
-                  </StyledApproveWrapper>
-                </CardContent>
-              </Card>
-            </Grid>
-            </StyledApprove>
+            <Box mt={5}>
+              <Grid container justify="center">
+                <Grid item xs={8}>
+                  <Card>
+                    <CardContent>
+                      <StyledApproveWrapper>
+                      {approveStatus !== ApprovalState.APPROVED ? (
+                        <Button
+                          disabled={approveStatus !== ApprovalState.NOT_APPROVED}
+                          color="primary"
+                          variant="contained"
+                          onClick={approve}
+                          size="medium"
+                        >
+                          Approve TBOND
+                        </Button>
+                      ) : (
+                        <Button
+                          color="primary"
+                          variant="contained"
+                          onClick={() => onSwapTShare(tbondAmount.toString())}
+                          size="medium"
+                        >
+                          Swap
+                        </Button>
+                      )}
+                      </StyledApproveWrapper>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
           </>
         ) : (
           <UnlockWallet />
@@ -190,18 +197,16 @@ const Sbs: React.FC = () => {
   );
 };
 
-const StyledApprove = styled.div`
-  display: flex;
+const StyledBoardroom = styled.div`
   align-items: center;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
-const StyledApproveWrapper = styled.div`
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const StyledBond = styled.div`
+const StyledCardsWrapper = styled.div`
   display: flex;
   @media (max-width: 768px) {
     width: 100%;
@@ -215,10 +220,14 @@ const StyledCardWrapper = styled.div`
   flex: 1;
   flex-direction: column;
   @media (max-width: 768px) {
-    width: 80%;
+    width: 100%;
   }
 `;
 
+const StyledApproveWrapper = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+`;
 const StyledCardTitle = styled.div`
   align-items: center;
   display: flex;
