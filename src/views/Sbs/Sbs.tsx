@@ -123,7 +123,7 @@ const Sbs: React.FC = () => {
                         </CardContent>
                       </Card>
                     </StyledCardWrapper>
-                    <Spacer />
+                    <Spacer size="lg"/>
                     <StyledCardWrapper>
                       <Card>
                         <CardContent>
