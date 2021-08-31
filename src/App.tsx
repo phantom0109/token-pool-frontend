@@ -18,7 +18,6 @@ import Popups from './components/Popups';
 import Regulations from './views/Regulations/Regulations';
 import { RefreshContextProvider } from './contexts/RefreshContext';
 
-
 const Home = lazy(() => import('./views/Home'));
 const Cemetery = lazy(() => import('./views/Cemetery'));
 const Masonry = lazy(() => import('./views/Masonry'));
@@ -86,6 +85,11 @@ const Providers: React.FC = ({ children }) => {
           chainId={config.chainId}
           connectors={{
             walletconnect: { rpcUrl: config.defaultProvider },
+            walletlink: {
+              url: config.defaultProvider,
+              appName: 'Tomb Finance',
+              appLogoUrl: 'https://github.com/tombfinance/tombfinance-assets/blob/master/logo_tomb_NoBG.png',
+            },
           }}
         >
           <Provider store={store}>
