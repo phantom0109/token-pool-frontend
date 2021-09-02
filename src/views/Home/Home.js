@@ -3,6 +3,8 @@ import Page from '../../components/Page';
 import HomeImage from '../../assets/img/home.png';
 import CashImage from '../../assets/img/crypto_tomb_cash.svg';
 import Image from 'material-ui-image';
+import styled from 'styled-components';
+import { Alert } from '@material-ui/lab';
 import { createGlobalStyle } from 'styled-components';
 import CountUp from 'react-countup';
 import CardIcon from '../../components/CardIcon';
@@ -101,6 +103,11 @@ const Home = () => {
   const tombLpZap = useZap({ depositTokenName: 'TOMB-FTM-LP' });
   const tshareLpZap = useZap({ depositTokenName: 'TSHARE-FTM-LP' });
 
+  const StyledLink = styled.a`
+    font-weight: 700;
+    text-decoration: none;
+  `;
+
   const [onPresentTombZap, onDissmissTombZap] = useModal(
     <ZapModal
       decimals={18}
@@ -141,11 +148,23 @@ const Home = () => {
               <h2>Welcome to Tomb Finance</h2>
               <p>The first algorithmic stablecoin on Fantom Opera, pegged to the price of 1 FTM via seigniorage.</p>
               <p>
-                Stake your $TOMB-$FTM LP in the Cemetery to earn $TSHARE rewards.
-                Then stake your earned $TSHARE in the Masonry to earn more $TOMB!
+                Stake your TOMB-FTM LP in the Cemetery to earn TSHARE rewards.
+                Then stake your earned TSHARE in the Masonry to earn more $TOMB!
               </p>
             </Box>
           </Paper>
+
+
+
+        </Grid>
+
+        <Grid container spacing={3}>
+    <Grid item  xs={12} sm={12} justify="center"  style={{ margin: '12px' }}>
+            <Alert variant="filled" severity="warning">
+              <b>TOMB is a taxed token, which means you will pay a service fee when selling TOMB.
+      Please visit our <StyledLink target="_blank" href="https://docs.tomb.finance">documentation</StyledLink> before purchasing TOMB or TSHARE!</b>
+            </Alert>
+        </Grid>
         </Grid>
 
         {/* TVL */}
