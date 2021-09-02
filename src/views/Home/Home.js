@@ -149,7 +149,7 @@ const Home = () => {
               <p>The first algorithmic stablecoin on Fantom Opera, pegged to the price of 1 FTM via seigniorage.</p>
               <p>
                 Stake your TOMB-FTM LP in the Cemetery to earn TSHARE rewards.
-                Then stake your earned TSHARE in the Masonry to earn more $TOMB!
+                Then stake your earned TSHARE in the Masonry to earn more TOMB!
               </p>
             </Box>
           </Paper>
