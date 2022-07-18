@@ -3,6 +3,8 @@ import Page from '../../components/Page';
 import HomeImage from '../../assets/img/home.png';
 import CashImage from '../../assets/img/crypto_tomb_cash.svg';
 import Image from 'material-ui-image';
+import styled from 'styled-components';
+import { Alert } from '@material-ui/lab';
 import { createGlobalStyle } from 'styled-components';
 import CountUp from 'react-countup';
 import CardIcon from '../../components/CardIcon';
@@ -69,7 +71,7 @@ const Home = () => {
     () => (tombStats ? Number(tombStats.priceInDollars).toFixed(2) : null),
     [tombStats],
   );
-  const tombPriceInFTM = useMemo(() => (tombStats ? Number(tombStats.tokenInFtm).toFixed(2) : null), [tombStats]);
+  const tombPriceInFTM = useMemo(() => (tombStats ? Number(tombStats.tokenInFtm).toFixed(4) : null), [tombStats]);
   const tombCirculatingSupply = useMemo(() => (tombStats ? String(tombStats.circulatingSupply) : null), [tombStats]);
   const tombTotalSupply = useMemo(() => (tombStats ? String(tombStats.totalSupply) : null), [tombStats]);
 
@@ -78,7 +80,7 @@ const Home = () => {
     [tShareStats],
   );
   const tSharePriceInFTM = useMemo(
-    () => (tShareStats ? Number(tShareStats.tokenInFtm).toFixed(2) : null),
+    () => (tShareStats ? Number(tShareStats.tokenInFtm).toFixed(4) : null),
     [tShareStats],
   );
   const tShareCirculatingSupply = useMemo(
@@ -91,7 +93,7 @@ const Home = () => {
     () => (tBondStats ? Number(tBondStats.priceInDollars).toFixed(2) : null),
     [tBondStats],
   );
-  const tBondPriceInFTM = useMemo(() => (tBondStats ? Number(tBondStats.tokenInFtm).toFixed(2) : null), [tBondStats]);
+  const tBondPriceInFTM = useMemo(() => (tBondStats ? Number(tBondStats.tokenInFtm).toFixed(4) : null), [tBondStats]);
   const tBondCirculatingSupply = useMemo(
     () => (tBondStats ? String(tBondStats.circulatingSupply) : null),
     [tBondStats],
@@ -101,6 +103,14 @@ const Home = () => {
   const tombLpZap = useZap({ depositTokenName: 'TOMB-FTM-LP' });
   const tshareLpZap = useZap({ depositTokenName: 'TSHARE-FTM-LP' });
 
+<<<<<<< HEAD
+=======
+  const StyledLink = styled.a`
+    font-weight: 700;
+    text-decoration: none;
+  `;
+
+>>>>>>> upstream/main
   const [onPresentTombZap, onDissmissTombZap] = useModal(
     <ZapModal
       decimals={18}
@@ -141,11 +151,23 @@ const Home = () => {
               <h2>Welcome to Tomb Finance</h2>
               <p>The first algorithmic stablecoin on Fantom Opera, pegged to the price of 1 FTM via seigniorage.</p>
               <p>
-                Stake your TSHARE in the Masonry to earn inflationary TOMB rewards or provide liquidity on pairs and
-                start earning today!
+                Stake your TOMB-FTM LP in the Cemetery to earn TSHARE rewards.
+                Then stake your earned TSHARE in the Masonry to earn more TOMB!
               </p>
             </Box>
           </Paper>
+
+
+
+        </Grid>
+
+        <Grid container spacing={3}>
+    <Grid item  xs={12} sm={12} justify="center"  style={{ margin: '12px', display: 'flex' }}>
+            <Alert variant="filled" severity="warning">
+              <b>
+      Please visit our <StyledLink target="_blank" href="https://docs.tomb.finance">documentation</StyledLink> before purchasing TOMB or TSHARE!</b>
+            </Alert>
+        </Grid>
         </Grid>
 
         {/* TVL */}
@@ -166,7 +188,7 @@ const Home = () => {
               <Button color="primary" href="/masonry" variant="contained" style={{ marginRight: '10px' }}>
                 Stake Now
               </Button>
-              <Button href="/cemetery" variant="contained" className={classes.button} style={{ marginRight: '10px' }}>
+              <Button href="/cemetery" variant="contained" style={{ marginRight: '10px' }}>
                 Farm Now
               </Button>
               <Button
@@ -175,6 +197,7 @@ const Home = () => {
                 href={buyTombAddress}
                 variant="contained"
                 style={{ marginRight: '10px' }}
+                className={classes.button}
               >
                 Buy TOMB
               </Button>
@@ -208,7 +231,7 @@ const Home = () => {
               </Box>
               Current Price
               <Box>
-                <span style={{ fontSize: '30px' }}>{tombPriceInFTM ? tombPriceInFTM : '-.--'} FTM</span>
+                <span style={{ fontSize: '30px' }}>{tombPriceInFTM ? tombPriceInFTM : '-.----'} FTM</span>
               </Box>
               <Box>
                 <span style={{ fontSize: '16px', alignContent: 'flex-start' }}>
@@ -247,7 +270,7 @@ const Home = () => {
               </Box>
               Current Price
               <Box>
-                <span style={{ fontSize: '30px' }}>{tSharePriceInFTM ? tSharePriceInFTM : '-.--'} FTM</span>
+                <span style={{ fontSize: '30px' }}>{tSharePriceInFTM ? tSharePriceInFTM : '-.----'} FTM</span>
               </Box>
               <Box>
                 <span style={{ fontSize: '16px' }}>${tSharePriceInDollars ? tSharePriceInDollars : '-.--'}</span>
@@ -284,7 +307,7 @@ const Home = () => {
               </Box>
               Current Price
               <Box>
-                <span style={{ fontSize: '30px' }}>{tBondPriceInFTM ? tBondPriceInFTM : '-.--'} FTM</span>
+                <span style={{ fontSize: '30px' }}>{tBondPriceInFTM ? tBondPriceInFTM : '-.----'} FTM</span>
               </Box>
               <Box>
                 <span style={{ fontSize: '16px' }}>${tBondPriceInDollars ? tBondPriceInDollars : '-.--'}</span>
@@ -307,7 +330,11 @@ const Home = () => {
                 </CardIcon>
               </Box>
               <Box mt={2}>
+<<<<<<< HEAD
                 <Button color="primary" onClick={onPresentTombZap} variant="contained">
+=======
+                <Button color="primary" disabled={true} onClick={onPresentTombZap} variant="contained">
+>>>>>>> upstream/main
                   Zap In
                 </Button>
               </Box>
@@ -335,11 +362,15 @@ const Home = () => {
                 </CardIcon>
               </Box>
               <Box mt={2}>
+<<<<<<< HEAD
                 <Button
                   color="primary"
                   onClick={onPresentTshareZap}
                   variant="contained"
                 >
+=======
+                <Button color="primary" onClick={onPresentTshareZap} variant="contained">
+>>>>>>> upstream/main
                   Zap In
                 </Button>
               </Box>

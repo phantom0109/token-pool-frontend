@@ -15,6 +15,7 @@ import useCashPriceInLastTWAP from '../../hooks/useCashPriceInLastTWAP';
 import { useTransactionAdder } from '../../state/transactions/hooks';
 import ExchangeStat from './components/ExchangeStat';
 import useTokenBalance from '../../hooks/useTokenBalance';
+import useBondsPurchasable from '../../hooks/useBondsPurchasable';
 import { getDisplayBalance } from '../../utils/formatBalance';
 import { BOND_REDEEM_PRICE, BOND_REDEEM_PRICE_BN } from '../../tomb-finance/constants';
 
@@ -32,6 +33,7 @@ const Pit: React.FC = () => {
   const addTransaction = useTransactionAdder();
   const bondStat = useBondStats();
   const cashPrice = useCashPriceInLastTWAP();
+  const bondsPurchasable = useBondsPurchasable();
 
   const bondBalance = useTokenBalance(tombFinance?.TBOND);
 
@@ -53,7 +55,7 @@ const Pit: React.FC = () => {
     [tombFinance, addTransaction],
   );
   const isBondRedeemable = useMemo(() => cashPrice.gt(BOND_REDEEM_PRICE_BN), [cashPrice]);
-  const isBondPurchasable = useMemo(() => Number(bondStat?.tokenInFtm) < 1.0, [bondStat]);
+  const isBondPurchasable = useMemo(() => Number(bondStat?.tokenInFtm) < 1.01, [bondStat]);
 
   return (
     <Switch>
@@ -75,7 +77,7 @@ const Pit: React.FC = () => {
                   priceDesc={
                     !isBondPurchasable
                       ? 'TOMB is over peg'
-                      : `${Math.floor(100 / Number(bondStat.priceInDollars) - 100)}% return when TOMB > 1.1FTM`
+                      : getDisplayBalance(bondsPurchasable, 18, 4) + ' TBOND available for purchase'
                   }
                   onExchange={handleBuyBonds}
                   disabled={!bondStat || isBondRedeemable}
@@ -85,7 +87,7 @@ const Pit: React.FC = () => {
                 <ExchangeStat
                   tokenName="TOMB"
                   description="Last-Hour TWAP Price"
-                  price={getDisplayBalance(cashPrice, 18, 2)}
+                  price={getDisplayBalance(cashPrice, 18, 4)}
                 />
                 <Spacer size="md" />
                 <ExchangeStat
@@ -101,7 +103,7 @@ const Pit: React.FC = () => {
                   fromTokenName="TBOND"
                   toToken={tombFinance.TOMB}
                   toTokenName="TOMB"
-                  priceDesc={`${getDisplayBalance(bondBalance)} TBOND Available`}
+                  priceDesc={`${getDisplayBalance(bondBalance)} TBOND Available in wallet`}
                   onExchange={handleRedeemBonds}
                   disabled={!bondStat || bondBalance.eq(0) || !isBondRedeemable}
                   disabledDescription={!isBondRedeemable ? `Enabled when TOMB > ${BOND_REDEEM_PRICE}FTM` : null}

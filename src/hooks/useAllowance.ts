@@ -14,7 +14,7 @@ const useAllowance = (token: ERC20, spender: string, pendingApproval?: boolean) 
 
   useEffect(() => {
     if (account && spender && token) {
-      fetchAllowance().catch((err) => console.log(`Failed to fetch allowance: ${err.stack}`));
+      fetchAllowance().catch((err) => console.error(`Failed to fetch allowance: ${err.stack}`));
     }
   }, [account, spender, token, pendingApproval, fetchAllowance]);
 

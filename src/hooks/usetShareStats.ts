@@ -1,21 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useTombFinance from './useTombFinance';
 import { TokenStat } from '../tomb-finance/types';
-import config from '../config';
+import useRefresh from './useRefresh';
 
 const useShareStats = () => {
   const [stat, setStat] = useState<TokenStat>();
+  const { slowRefresh } = useRefresh();
   const tombFinance = useTombFinance();
 
-  const fetchSharePrice = useCallback(async () => {
-    setStat(await tombFinance.getShareStat());
-  }, [tombFinance]);
-
   useEffect(() => {
-    fetchSharePrice().catch((err) => console.error(`Failed to fetch TSHARE price: ${err.stack}`));
-    const refreshInterval = setInterval(fetchSharePrice, config.refreshInterval);
-    return () => clearInterval(refreshInterval);
-  }, [setStat, tombFinance, fetchSharePrice]);
+    async function fetchSharePrice() {
+      try {
+        setStat(await tombFinance.getShareStat());
+      } catch(err){
+        console.error(err)
+      }
+    }
+    fetchSharePrice();
+  }, [setStat, tombFinance, slowRefresh]);
 
   return stat;
 };

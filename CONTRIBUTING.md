@@ -19,7 +19,7 @@ Contributions are made to this repo via Issues and Pull Requests (PRs). A few ge
 
 Issues should be used to report problems with the website, request a new feature, or to discuss potential changes before a PR is created. Make sure to collect and provide as much information as possible for us to investigate.
 
-If you find an Issue that addresses the problem you're having, please add your own reproduction information to the existing issue rather than creating a new one. Adding a [reaction](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/) can also help be indicating to our maintainers that a particular problem is affecting more than just the reporter.
+If you find an Issue that addresses the problem you're having, please add your own reproduction information to the existing issue rather than creating a new one. Adding a [reaction](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/) can also help by indicating to our maintainers that a particular problem is affecting more than just the reporter.
 
 ### Pull Requests
 
@@ -27,7 +27,7 @@ PRs to our ecosystem are always welcome and can be a quick way to get your fix o
 
 - Only fix/add the functionality in question **OR** address wide-spread whitespace/style issues, not both.
 - Address a single concern in the least number of changed lines as possible.
-- Include documentation in the pool request to describe how you solved the issue.
+- Include documentation in the pull request to describe how you solved the issue.
 
 For major changes (e.g. a major release), it's best to open an Issue to discuss your proposal first. This is not required but can save time creating and reviewing changes.
 
@@ -42,7 +42,7 @@ In general, we follow the ["fork-and-pull" Git workflow](https://gist.github.com
 
 ### Submitting changes
 
-Alway open a GitHub Pull Request with a clear list of what you've done (read more about [pull requests](http://help.github.com/pull-requests/)). Please follow our coding requirements (below) and make sure all of your commits are atomic (one feature per commit).
+Always open a GitHub Pull Request with a clear list of what you've done (read more about [pull requests](http://help.github.com/pull-requests/)). Please follow our coding requirements (below) and make sure all of your commits are atomic (one feature per commit).
 
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 

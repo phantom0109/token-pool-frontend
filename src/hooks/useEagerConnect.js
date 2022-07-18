@@ -6,13 +6,12 @@ const useEagerConnect = () => {
   // const { login } = useAuth()
   const { account, connect, connector } = useWallet();
 
-  if (account) {
+  if (account && window.localStorage.getItem('connectorId') === '') {
     window.localStorage.setItem('connectorId', connector);
   }
 
   useEffect(() => {
     const connectorId = window.localStorage.getItem('connectorId');
-
     if (connectorId && !account) {
       connect(connectorId);
     }

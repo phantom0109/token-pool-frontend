@@ -2,12 +2,12 @@
 import { Fetcher as FetcherSpirit, Token as TokenSpirit } from '@spiritswap/sdk';
 import { Fetcher, Route, Token } from '@spookyswap/sdk';
 import { Configuration } from './config';
-import { ContractName, TokenStat, AllocationTime, LPStat, Bank, PoolStats } from './types';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { ContractName, TokenStat, AllocationTime, LPStat, Bank, PoolStats, TShareSwapperStat } from './types';
+import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
 import { decimalToBalance } from './ether-utils';
 import { TransactionResponse } from '@ethersproject/providers';
 import ERC20 from './ERC20';
-import { getFullDisplayBalance, getDisplayBalance, getBalance } from '../utils/formatBalance';
+import { getFullDisplayBalance, getDisplayBalance } from '../utils/formatBalance';
 import { getDefaultProvider } from '../utils/provider';
 import IUniswapV2PairABI from './IUniswapV2Pair.abi.json';
 import config, { bankDefinitions } from '../config';
@@ -156,11 +156,8 @@ export class TombFinance {
   async getBondStat(): Promise<TokenStat> {
     const { Treasury } = this.contracts;
     const tombStat = await this.getTombStat();
-    const bondTombRatio = await Treasury.getBondPremiumRate();
-    let modifier = 1; // keep to 1 if no bondPremium is to be used
-    if (getBalance(bondTombRatio, this.TOMB.decimal) > 0) {
-      modifier = getBalance(bondTombRatio, this.TOMB.decimal);
-    }
+    const bondTombRatioBN = await Treasury.getBondPremiumRate();
+    const modifier = bondTombRatioBN / 1e18 > 1 ? bondTombRatioBN / 1e18 : 1;
     const bondPriceInFTM = (Number(tombStat.tokenInFtm) * modifier).toFixed(2);
     const priceOfTBondInDollars = (Number(tombStat.priceInDollars) * modifier).toFixed(2);
     const supply = await this.TBOND.displayedTotalSupply();
@@ -216,6 +213,11 @@ export class TombFinance {
   async getTombPriceInLastTWAP(): Promise<BigNumber> {
     const { Treasury } = this.contracts;
     return Treasury.getTombUpdatedPrice();
+  }
+
+  async getBondsPurchasable(): Promise<BigNumber> {
+    const { Treasury } = this.contracts;
+    return Treasury.getBurnableTombLeft();
   }
 
   /**
@@ -746,6 +748,26 @@ export class TombFinance {
     return true;
   }
 
+  async provideTombFtmLP(ftmAmount: string, tombAmount: BigNumber): Promise<TransactionResponse> {
+    const { TaxOffice } = this.contracts;
+    let overrides = {
+      value: parseUnits(ftmAmount, 18),
+    };
+    return await TaxOffice.addLiquidityETHTaxFree(tombAmount, tombAmount.mul(992).div(1000), parseUnits(ftmAmount, 18).mul(992).div(1000), overrides);
+  }
+
+  async quoteFromSpooky(tokenAmount: string, tokenName: string): Promise<string> {
+    const { SpookyRouter } = this.contracts;
+    const { _reserve0, _reserve1 } = await this.TOMBWFTM_LP.getReserves();
+    let quote;
+    if (tokenName === 'TOMB') {
+      quote = await SpookyRouter.quote(parseUnits(tokenAmount), _reserve1, _reserve0);
+    } else {
+      quote = await SpookyRouter.quote(parseUnits(tokenAmount), _reserve0, _reserve1);
+    }
+    return (quote / 1e18).toString();
+  }
+
   /**
    * @returns an array of the regulation events till the most up to date epoch
    */
@@ -755,12 +777,45 @@ export class TombFinance {
     const treasuryDaoFundedFilter = Treasury.filters.DaoFundFunded();
     const treasuryDevFundedFilter = Treasury.filters.DevFundFunded();
     const treasuryMasonryFundedFilter = Treasury.filters.MasonryFunded();
+    const boughtBondsFilter = Treasury.filters.BoughtBonds();
+    const redeemBondsFilter = Treasury.filters.RedeemedBonds();
 
+    let epochBlocksRanges: any[] = [];
     let masonryFundEvents = await Treasury.queryFilter(treasuryMasonryFundedFilter);
     var events: any[] = [];
     masonryFundEvents.forEach(function callback(value, index) {
       events.push({ epoch: index + 1 });
       events[index].masonryFund = getDisplayBalance(value.args[1]);
+      if (index === 0) {
+        epochBlocksRanges.push({
+          index: index,
+          startBlock: value.blockNumber,
+          boughBonds: 0,
+          redeemedBonds: 0,
+        });
+      }
+      if (index > 0) {
+        epochBlocksRanges.push({
+          index: index,
+          startBlock: value.blockNumber,
+          boughBonds: 0,
+          redeemedBonds: 0,
+        });
+        epochBlocksRanges[index - 1].endBlock = value.blockNumber;
+      }
+    });
+
+    epochBlocksRanges.forEach(async (value, index) => {
+      events[index].bondsBought = await this.getBondsWithFilterForPeriod(
+        boughtBondsFilter,
+        value.startBlock,
+        value.endBlock,
+      );
+      events[index].bondsRedeemed = await this.getBondsWithFilterForPeriod(
+        redeemBondsFilter,
+        value.startBlock,
+        value.endBlock,
+      );
     });
     let DEVFundEvents = await Treasury.queryFilter(treasuryDevFundedFilter);
     DEVFundEvents.forEach(function callback(value, index) {
@@ -771,6 +826,19 @@ export class TombFinance {
       events[index].daoFund = getDisplayBalance(value.args[1]);
     });
     return events;
+  }
+
+  /**
+   * Helper method
+   * @param filter applied on the query to the treasury events
+   * @param from block number
+   * @param to block number
+   * @returns the amount of bonds events emitted based on the filter provided during a specific period
+   */
+  async getBondsWithFilterForPeriod(filter: EventFilter, from: number, to: number): Promise<number> {
+    const { Treasury } = this.contracts;
+    const bondsAmount = await Treasury.queryFilter(filter, from, to);
+    return bondsAmount.length;
   }
 
   async estimateZapIn(tokenName: string, lpName: string, amount: string): Promise<number[]> {
@@ -808,5 +876,36 @@ export class TombFinance {
         this.myAccount,
       );
     }
+  }
+  async swapTBondToTShare(tbondAmount: BigNumber): Promise<TransactionResponse> {
+    const { TShareSwapper } = this.contracts;
+    return await TShareSwapper.swapTBondToTShare(tbondAmount);
+  }
+  async estimateAmountOfTShare(tbondAmount: string): Promise<string> {
+    const { TShareSwapper } = this.contracts;
+    try {
+      const estimateBN = await TShareSwapper.estimateAmountOfTShare(parseUnits(tbondAmount, 18));
+      return getDisplayBalance(estimateBN, 18, 6);
+    } catch (err) {
+      console.error(`Failed to fetch estimate tshare amount: ${err}`);
+    }
+  }
+
+  async getTShareSwapperStat(address: string): Promise<TShareSwapperStat> {
+    const { TShareSwapper } = this.contracts;
+    const tshareBalanceBN = await TShareSwapper.getTShareBalance();
+    const tbondBalanceBN = await TShareSwapper.getTBondBalance(address);
+    // const tombPriceBN = await TShareSwapper.getTombPrice();
+    // const tsharePriceBN = await TShareSwapper.getTSharePrice();
+    const rateTSharePerTombBN = await TShareSwapper.getTShareAmountPerTomb();
+    const tshareBalance = getDisplayBalance(tshareBalanceBN, 18, 5);
+    const tbondBalance = getDisplayBalance(tbondBalanceBN, 18, 5);
+    return {
+      tshareBalance: tshareBalance.toString(),
+      tbondBalance: tbondBalance.toString(),
+      // tombPrice: tombPriceBN.toString(),
+      // tsharePrice: tsharePriceBN.toString(),
+      rateTSharePerTomb: rateTSharePerTombBN.toString(),
+    };
   }
 }

@@ -47,9 +47,9 @@ const Regulations = () => {
   const classes = useStyles();
   const tombFinance = useTombFinance();
   const [rows, setRows] = useState(null);
-  function createData(epoch, dao, dev, masonry) {
+  function createData(epoch, dao, dev, masonry, bondsBought, bondsRedeemed) {
     var sum = (Number(dao) + Number(dev) + Number(masonry)).toFixed(2);
-    return { epoch, dao, dev, masonry, sum };
+    return { epoch, dao, dev, masonry, sum, bondsBought, bondsRedeemed };
   }
   useEffect(() => {
     if (tombFinance) {
@@ -58,7 +58,16 @@ const Regulations = () => {
         setRows(
           elements
             .reverse()
-            .map((element) => createData(element.epoch, element.daoFund, element.devFund, element.masonryFund)),
+            .map((element) =>
+              createData(
+                element.epoch,
+                element.daoFund,
+                element.devFund,
+                element.masonryFund,
+                element.bondsBought,
+                element.bondsRedeemed,
+              ),
+            ),
         );
       });
     }
@@ -96,8 +105,8 @@ const Regulations = () => {
                 <StyledTableCell align="center">{row.dao}</StyledTableCell>
                 <StyledTableCell align="center">{row.dev}</StyledTableCell>
                 <StyledTableCell align="center">{row.sum}</StyledTableCell>
-                <StyledTableCell align="center">0</StyledTableCell>
-                <StyledTableCell align="center">0</StyledTableCell>
+                <StyledTableCell align="center">{row.bondsBought}</StyledTableCell>
+                <StyledTableCell align="center">{row.bondsRedeemed}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

@@ -1,24 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import useRefresh from '../useRefresh';
 import useTombFinance from './../useTombFinance';
-import config from '../../config';
 
 const useClaimRewardCheck = () => {
+  const  { slowRefresh } = useRefresh();
   const [canClaimReward, setCanClaimReward] = useState(false);
   const tombFinance = useTombFinance();
   const isUnlocked = tombFinance?.isUnlocked;
 
-  const canUserClaimReward = useCallback(async () => {
-    setCanClaimReward(await tombFinance.canUserClaimRewardFromMasonry());
-  }, [tombFinance]);
-
   useEffect(() => {
-    if (isUnlocked) {
-      canUserClaimReward().catch((err) => console.error(err.stack));
-
-      const checkButton = setInterval(canUserClaimReward, config.refreshInterval);
-      return () => clearInterval(checkButton);
+    async function canUserClaimReward() {
+      try {
+        setCanClaimReward(await tombFinance.canUserClaimRewardFromMasonry());
+      } catch(err){
+        console.error(err);
+      };
     }
-  }, [isUnlocked, canUserClaimReward, tombFinance]);
+    if (isUnlocked) {
+      canUserClaimReward();
+    }
+  }, [isUnlocked, slowRefresh, tombFinance]);
 
   return canClaimReward;
 };

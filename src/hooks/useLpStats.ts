@@ -1,21 +1,24 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useTombFinance from './useTombFinance';
 import { LPStat } from '../tomb-finance/types';
-import config from '../config';
+import useRefresh from './useRefresh';
 
 const useLpStats = (lpTicker: string) => {
   const [stat, setStat] = useState<LPStat>();
+  const { slowRefresh } = useRefresh();
   const tombFinance = useTombFinance();
 
-  const fetchCashPrice = useCallback(async () => {
-    setStat(await tombFinance.getLPStat(lpTicker));
-  }, [tombFinance, lpTicker]);
-
   useEffect(() => {
-    fetchCashPrice().catch((err) => console.error(`Failed to fetch TOMB price: ${err.stack}`));
-    const refreshInterval = setInterval(fetchCashPrice, config.refreshInterval);
-    return () => clearInterval(refreshInterval);
-  }, [setStat, tombFinance, fetchCashPrice]);
+    async function fetchLpPrice() {
+      try{
+        setStat(await tombFinance.getLPStat(lpTicker));
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+    fetchLpPrice();
+  }, [setStat, tombFinance, slowRefresh, lpTicker]);
 
   return stat;
 };
